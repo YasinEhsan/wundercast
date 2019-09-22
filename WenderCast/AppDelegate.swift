@@ -48,6 +48,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     UITabBar.appearance().barTintColor = UIColor.themeGreenColor
     UITabBar.appearance().tintColor = UIColor.white
     registerForPushNotifications()
+    
+    // Check if launched from notification
+    let notificationOption = launchOptions?[.remoteNotification]
+    
+    // 1
+    if let notification = notificationOption as? [String: AnyObject],
+      let aps = notification["aps"] as? [String: AnyObject] {
+      
+      // 2
+      NewsItem.makeNewsItem(aps)
+      
+      // 3
+      (window?.rootViewController as? UITabBarController)?.selectedIndex = 1
+    }
+
 
     return true
   }
@@ -67,8 +82,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func getNotificationSettings() {
     UNUserNotificationCenter.current().getNotificationSettings { settings in
       print("Notification settings: \(settings)")
+      guard settings.authorizationStatus == .authorized else { return }
+      DispatchQueue.main.async {
+        UIApplication.shared.registerForRemoteNotifications()
+      }
     }
   }
+  
+  
+  //GET DEVICE TOKEN
+  func application(
+    _ application: UIApplication,
+    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+    let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
+    let token = tokenParts.joined()
+    print("Device Token: \(token)")
+  }
+  
+  func application(
+    _ application: UIApplication,
+    didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    print("Failed to register: \(error)")
+  }
+
 
 
 }
