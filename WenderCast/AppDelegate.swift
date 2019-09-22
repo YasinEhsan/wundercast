@@ -47,17 +47,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //TAB BAR COLOR
     UITabBar.appearance().barTintColor = UIColor.themeGreenColor
     UITabBar.appearance().tintColor = UIColor.white
-    
+    registerForPushNotifications()
+
     return true
   }
   
   func registerForPushNotifications() {
-    UNUserNotificationCenter.current() // 1
-      .requestAuthorization(options: [.alert, .sound, .badge]) { // 2
-        granted, error in
-        print("Permission granted: \(granted)") // 3
+    UNUserNotificationCenter.current()
+      .requestAuthorization(options: [.alert, .sound, .badge]) {
+        [weak self] granted, error in
+        
+        print("Permission granted: \(granted)")
+        guard granted else { return }
+        self?.getNotificationSettings()
+    }
+
+  }
+  
+  func getNotificationSettings() {
+    UNUserNotificationCenter.current().getNotificationSettings { settings in
+      print("Notification settings: \(settings)")
     }
   }
+
 
 }
 
