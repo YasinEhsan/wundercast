@@ -67,6 +67,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
   
+  func application(
+    _ application: UIApplication,
+    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    fetchCompletionHandler completionHandler:
+    @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+    guard let aps = userInfo["aps"] as? [String: AnyObject] else {
+      completionHandler(.failed)
+      return
+    }
+    NewsItem.makeNewsItem(aps)
+  }
+
+  
   func registerForPushNotifications() {
     UNUserNotificationCenter.current()
       .requestAuthorization(options: [.alert, .sound, .badge]) {
