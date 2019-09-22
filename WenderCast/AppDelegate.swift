@@ -87,6 +87,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         [weak self] granted, error in
         
         print("Permission granted: \(granted)")
+        // 1
+        let viewAction = UNNotificationAction(
+          identifier: Identifiers.viewAction, title: "View",
+          options: [.foreground])
+        
+        // 2
+        let newsCategory = UNNotificationCategory(
+          identifier: Identifiers.newsCategory, actions: [viewAction],
+          intentIdentifiers: [], options: [])
+        
+        // 3
+        UNUserNotificationCenter.current().setNotificationCategories([newsCategory])
+
         guard granted else { return }
         self?.getNotificationSettings()
     }
